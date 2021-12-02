@@ -1,0 +1,6 @@
+framework module Pods_tvShow_tvShowUITests {
+  umbrella header "Pods-tvShow-tvShowUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}
