@@ -15,9 +15,11 @@ protocol ShowViewModelProtocol {
     var searchShowsSuccess: BehaviorRelay<Shows?> { get set }
     var getEpisodesError: BehaviorRelay<Void> { get set }
     var getEpisodesSuccess: BehaviorRelay<Episodes?> { get set }
+    var getShowsSuccess: BehaviorRelay<[ShowClass]?> { get set }
     
     func searchShows(with searchTerm: String)
     func getEpisodes(for showId: Int)
+    func getShows(for urls: [String])
 }
 
 // MARK: - class
@@ -31,6 +33,7 @@ final class ShowViewModel: ShowViewModelProtocol {
     var searchShowsSuccess = BehaviorRelay<Shows?>(value: nil)
     var getEpisodesError = BehaviorRelay<Void>(value: ())
     var getEpisodesSuccess = BehaviorRelay<Episodes?>(value: nil)
+    var getShowsSuccess = BehaviorRelay<[ShowClass]?>(value: nil)
     
     // MARK: - Init
     init(showUseCase: ShowUseCaseProtocol, episodesUseCase: EpisodesUseCaseProtocol) {
@@ -60,6 +63,14 @@ final class ShowViewModel: ShowViewModelProtocol {
                     return
                 }
                 self.getEpisodesSuccess.accept(episodes)
+            }
+    }
+    
+    internal func getShows(for urls: [String]) {
+        showUseCase
+            .with(shows: urls)
+            .executeGetShows { shows in
+                self.getShowsSuccess.accept(shows)
             }
     }
 }

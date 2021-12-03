@@ -42,5 +42,10 @@ extension SwinjectStoryboard {
         defaultContainer.storyboardInitCompleted(SearchPeopleCollectionViewController.self) { resolver, controller in
             controller.viewModel = resolver ~> PeopleViewModelProtocol.self
         }
+        
+        defaultContainer.storyboardInitCompleted(PersonDetailViewController.self) { resolver, controller in
+            controller.viewModel = resolver ~> PeopleViewModelProtocol.self
+            controller.showViewModel = resolver ~> ShowViewModelProtocol.self
+        }
     }
 }

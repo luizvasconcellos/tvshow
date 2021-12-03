@@ -62,9 +62,6 @@ class HomeCollectionViewController: SearchShowCollectionViewController, UISearch
     // MARK: - UISearchBarDelegate
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         guard let searchTerm = searchBar.text, !searchText.isEmpty else {
-//            let alert = UIAlertController(title: "Error", message: "Please, informa a valid TV Show name for search", preferredStyle: .alert)
-//            alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
-//            present(alert, animated: true, completion: nil)
             ToastMessage.show(message: "Please, informa a valid TV Show name for search.",
                               position: .bottom,
                               type: .error)

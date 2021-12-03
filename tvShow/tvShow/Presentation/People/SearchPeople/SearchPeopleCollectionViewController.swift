@@ -81,6 +81,21 @@ class SearchPeopleCollectionViewController: UICollectionViewController {
         cell.setup(with: people[indexPath.row])
         return cell
     }
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        if let vc = storyboard?.instantiateViewController(withIdentifier: "PersonDetailViewController") as? PersonDetailViewController {
+            
+            guard let personUrl = people[indexPath.row].person?.links?.linksSelf?.href else {
+                ToastMessage.show(message: "Sorry we don't have this person info :(",
+                                  position: .bottom,
+                                  type: .error)
+                return
+            }
+            vc.personUrl = personUrl
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
 }
 
 // MARK: - CollectionView Flow Layout Delegate

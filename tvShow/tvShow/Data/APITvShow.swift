@@ -25,11 +25,18 @@ private struct EndPoint {
     static let Episodes = "/episodes"
 }
 
+private struct Parameters {
+    static let embededEpsodesParam = "&embed=epsodes"
+    static let embededCastCredits = "?embed=castcredits"
+}
+
 // MARK: - Protocol
 protocol APITvShowProtocol {
     func searchShows(term: String, completion: @escaping (Shows?, ErrorType?) -> Void)
     func getEpisodes(showId: Int, completion: @escaping (Episodes?, ErrorType?) -> Void)
     func searchPeople(term: String, completion: @escaping (People?, ErrorType?) -> Void)
+    func getPersonWithCastCredit(for personUrl: String, completion: @escaping (PersonClass?, ErrorType?) -> Void)
+    func getShows(for urlList: [String], completion: @escaping ([ShowClass]?) -> Void)
 }
 
 // MARK: - Class
@@ -38,7 +45,6 @@ final class APITvShow: APITvShowProtocol {
     // MARK: - Properties
     private let cacher = ResponseCacher(behavior: .cache)
     private let baseUrl = "https://api.tvmaze.com"
-    private let embededEpsodesParam = "&embed=epsodes"
     
     // MARK: - Functions
     internal func searchShows(term: String, completion: @escaping (Shows?, ErrorType?) -> Void) {
@@ -46,36 +52,14 @@ final class APITvShow: APITvShowProtocol {
         let searchTerm = term.replacingOccurrences(of: " ", with: "+")
         let url = "\(baseUrl)\(TypeOfSearch.GlobalSearch)\(EndPoint.Show)\(searchTerm)"
         
-        AF.request(url)
-            .cacheResponse(using: cacher)
-            .validate()
-            .responseDecodable(of: Shows.self) { response in
-                switch response.result {
-                case .success:
-                    guard let shows = response.value else { return }
-                    completion(shows, nil)
-                case .failure( _):
-                    completion(nil, .requestError)
-                }
-            }
+        fetch(for: url, completion: completion)
     }
     
     internal func getEpisodes(showId: Int, completion: @escaping (Episodes?, ErrorType?) -> Void) {
         
         let url = "\(baseUrl)\(TypeOfSearch.Shows)/\(showId)\(EndPoint.Episodes)"
         
-        AF.request(url)
-            .cacheResponse(using: cacher)
-            .validate()
-            .responseDecodable(of: Episodes.self) { response in
-                switch response.result {
-                case .success:
-                    guard let episodes = response.value else { return }
-                    completion(episodes, nil)
-                case .failure( _):
-                    completion(nil, .requestError)
-                }
-            }
+        fetch(for: url, completion: completion)
     }
     
     internal func searchPeople(term: String, completion: @escaping (People?, ErrorType?) -> Void) {
@@ -83,17 +67,50 @@ final class APITvShow: APITvShowProtocol {
         let searchTerm = term.replacingOccurrences(of: " ", with: "+")
         let url = "\(baseUrl)\(TypeOfSearch.GlobalSearch)\(EndPoint.People)\(searchTerm)"
         
+        fetch(for: url, completion: completion)
+    }
+    
+    internal func getPersonWithCastCredit(for personUrl: String, completion: @escaping (PersonClass?, ErrorType?) -> Void) {
+        let url = personUrl + Parameters.embededCastCredits
+        
+        fetch(for: url, completion: completion)
+    }
+    
+    internal func getShows(for urlList: [String], completion: @escaping ([ShowClass]?) -> Void) {
+        fetchList(urlList, of: ShowClass.self, completion: completion)
+    }
+    
+    private func fetch<T: Decodable>(for url: String, type: T.Type = T.self, completion: @escaping (T?, ErrorType?) -> Void) {
         AF.request(url)
-            .cacheResponse(using: cacher)
             .validate()
-            .responseDecodable(of: People.self) { response in
+            .responseDecodable(of: type) { response in
                 switch response.result {
                 case .success:
-                    guard let people = response.value else { return }
-                    completion(people, nil)
+                    guard let response = response.value else { return }
+                    completion(response, nil)
                 case .failure( _):
                     completion(nil, .requestError)
                 }
             }
+    }
+    
+    private func fetchList<T: Decodable>(_ list: [String], of: T.Type, completion: @escaping ([T]?) -> Void) {
+        var items: [T] = []
+        let fetchGroup = DispatchGroup()
+        
+        list.forEach { (url) in
+            fetchGroup.enter()
+
+            AF.request(url).validate().responseDecodable(of: T.self) { (response) in
+                if let value = response.value {
+                    items.append(value)
+                }
+                fetchGroup.leave()
+            }
+        }
+        
+        fetchGroup.notify(queue: .main) {
+            completion(items)
+        }
     }
 }

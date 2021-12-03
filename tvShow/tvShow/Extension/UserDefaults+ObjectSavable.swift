@@ -30,7 +30,6 @@ extension UserDefaults: ObjectSavable {
     }
 }
 
-
 enum ObjectSavableError: String, LocalizedError {
     case unableToEncode = "Unable to encode object into data"
     case noValue = "No data object found for the given key"

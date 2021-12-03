@@ -240,6 +240,22 @@
             </objects>
             <point key="canvasLocation" x="2279.7101449275365" y="711.83035714285711"/>
         </scene>
+        <!--PersonDetailViewController-->
+        <scene sceneID="B97-sd-E08">
+            <objects>
+                <viewController storyboardIdentifier="PersonDetailViewController" title="PersonDetailViewController" id="JNc-h8-m8n" customClass="PersonDetailViewController" customModule="tvShow" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="GBX-UT-Hx6" customClass="Pers">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="Ini-3V-xyr"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="d26-Ic-zbP"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="LZi-k0-e8Z" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2052" y="711"/>
+        </scene>
         <!--SearchPeopleCollectionViewController-->
         <scene sceneID="QMb-nh-m3R">
             <objects>
@@ -295,6 +311,9 @@
                         </connections>
                     </collectionView>
                     <navigationItem key="navigationItem" id="EJe-96-NKg"/>
+                    <connections>
+                        <segue destination="JNc-h8-m8n" kind="show" id="7MC-wD-Rtb"/>
+                    </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cy5-TP-aff" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
